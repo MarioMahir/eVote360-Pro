@@ -1,0 +1,25 @@
+﻿@model eVote360.Core.Entities.Ciudadano
+
+<h2>Activar ciudadano</h2>
+
+<div class="alert alert-warning">
+    ¿Está seguro que desea activar este ciudadano?
+</div>
+
+<p>
+    <strong>@Model.Nombre @Model.Apellido</strong>
+</p>
+
+<form asp-action="ActivarConfirmado" method="post">
+
+    <input type="hidden" asp-for="Id" />
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Cancelar
+    </a>
+
+    <button type="submit" class="btn btn-success">
+        Aceptar
+    </button>
+
+</form>

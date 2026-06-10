@@ -1,0 +1,130 @@
+﻿@model IEnumerable<eVote360.Core.Entities.Ciudadano>
+
+@{
+    ViewData["Title"] = "Ciudadanos";
+
+    bool existeEleccionActiva =
+        ViewBag.ExisteEleccionActiva ?? false;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Mantenimiento de Ciudadanos</h2>
+
+    @if (!existeEleccionActiva)
+    {
+        <a asp-action="Create" class="btn btn-primary">
+            Crear ciudadano
+        </a>
+    }
+    else
+    {
+        <button class="btn btn-secondary" disabled>
+            Crear ciudadano
+        </button>
+    }
+</div>
+
+@if (existeEleccionActiva)
+{
+    <div class="alert alert-warning">
+        No se pueden modificar ciudadanos mientras exista una elección activa.
+    </div>
+}
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Correo electrónico</th>
+            <th>Número de documento</th>
+            <th>Estado</th>
+            <th style="width:250px;">Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.Any())
+        {
+            @foreach (var ciudadano in Model)
+            {
+                <tr>
+                    <td>@ciudadano.Nombre</td>
+                    <td>@ciudadano.Apellido</td>
+                    <td>@ciudadano.CorreoElectronico</td>
+                    <td>@ciudadano.NumeroDocumento</td>
+
+                    <td>
+                        @if (ciudadano.Activo)
+                        {
+                            <span class="badge bg-success">
+                                Activo
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Inactivo
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+                        @if (!existeEleccionActiva)
+                        {
+                            <a asp-action="Edit"
+                               asp-route-id="@ciudadano.Id"
+                               class="btn btn-warning btn-sm">
+                                Editar
+                            </a>
+
+                            @if (ciudadano.Activo)
+                            {
+                                <a asp-action="Desactivar"
+                                   asp-route-id="@ciudadano.Id"
+                                   class="btn btn-danger btn-sm">
+                                    Desactivar
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="Activar"
+                                   asp-route-id="@ciudadano.Id"
+                                   class="btn btn-success btn-sm">
+                                    Activar
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <button class="btn btn-warning btn-sm" disabled>
+                                Editar
+                            </button>
+
+                            @if (ciudadano.Activo)
+                            {
+                                <button class="btn btn-danger btn-sm" disabled>
+                                    Desactivar
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-success btn-sm" disabled>
+                                    Activar
+                                </button>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center">
+                    No existen ciudadanos registrados.
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
