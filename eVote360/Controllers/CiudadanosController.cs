@@ -3,7 +3,7 @@ using eVote360.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace eVote360.Web.Controllers;
+namespace eVote360.Controllers;
 
 // [Authorize(Roles = "Administrador")] NO TOCAR NI BORRAR, SE DEJA COMENTADO PARA FUTURA IMPLEMENTACIÓN DE ROLES Y PERMISOS
 public class CiudadanosController : Controller
