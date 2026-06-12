@@ -1,0 +1,25 @@
+﻿@model eVote360.Core.Entities.PuestoElectivo
+
+@{
+    ViewData["Title"] = "Desactivar Puesto";
+}
+
+<h3>
+    ¿Está seguro que desea desactivar este puesto electivo?
+</h3>
+
+<form asp-action="ConfirmarDesactivar"
+      asp-route-id="@Model.Id"
+      method="post">
+
+    <a asp-action="Index"
+       class="btn btn-secondary">
+        Cancelar
+    </a>
+
+    <button type="submit"
+            class="btn btn-danger">
+        Aceptar
+    </button>
+
+</form>
