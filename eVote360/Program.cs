@@ -11,6 +11,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<ICiudadanoService, CiudadanoService>();
 builder.Services.AddScoped<IPartidoPoliticoService, PartidoPoliticoService>();
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IPuestoElectivoService, PuestoElectivoService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
