@@ -1,0 +1,34 @@
+﻿@model eVote360.Core.Entities.PartidoPolitico
+
+@{
+    ViewData["Title"] = "Desactivar Partido";
+}
+
+<h2>Desactivar Partido Político</h2>
+
+<div class="alert alert-danger">
+    ¿Está seguro que desea desactivar este partido político?
+</div>
+
+<p>
+    <strong>@Model.Nombre</strong>
+</p>
+
+<form asp-action="ConfirmarDesactivar"
+      method="post">
+
+    <input type="hidden"
+           name="id"
+           value="@Model.Id" />
+
+    <button type="submit"
+            class="btn btn-danger">
+        Aceptar
+    </button>
+
+    <a asp-action="Index"
+       class="btn btn-secondary">
+        Cancelar
+    </a>
+
+</form>

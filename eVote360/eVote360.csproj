@@ -16,6 +16,8 @@
     <Folder Include="Areas\Dirigente\" />
     <Folder Include="Areas\Elector\" />
     <Folder Include="Filters\" />
+    <Folder Include="ViewModels\" />
+    <Folder Include="wwwroot\uploads\partidos\" />
   </ItemGroup>
 
   <ItemGroup>

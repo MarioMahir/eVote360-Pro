@@ -12,6 +12,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Ciudadano> Ciudadanos { get; set; }
 
+    public DbSet<PartidoPolitico> PartidosPoliticos { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
