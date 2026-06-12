@@ -1,27 +1,30 @@
 ﻿using eVote360.Core.Entities;
-using eVote360.Infrastructure.Data;
+using eVote360.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace eVote360.Controllers;
 
-// [Authorize(Roles = "Administrador")] NO TOCAR NI BORRAR, SE DEJA COMENTADO PARA FUTURA IMPLEMENTACIÓN DE ROLES Y PERMISOS
+// [Authorize(Roles = "Administrador")]
 public class CiudadanosController : Controller
 {
-    private readonly AppDbContext _context;
+    private readonly ICiudadanoService _ciudadanoService;
 
-    public CiudadanosController(AppDbContext context)
+    public CiudadanosController(
+        ICiudadanoService ciudadanoService)
     {
-        _context = context;
+        _ciudadanoService = ciudadanoService;
     }
 
     public async Task<IActionResult> Index()
     {
         ViewBag.ExisteEleccionActiva = false;
-        return View(await _context.Ciudadanos.ToListAsync());
+
+        var ciudadanos =
+            await _ciudadanoService.GetAllAsync();
+
+        return View(ciudadanos);
     }
 
-    // GET CREATE
     public IActionResult Create()
     {
         return View(new Ciudadano
@@ -30,42 +33,30 @@ public class CiudadanosController : Controller
         });
     }
 
-    // POST CREATE
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Ciudadano ciudadano)
+    public async Task<IActionResult> Create(
+        Ciudadano ciudadano)
     {
-        ciudadano.NumeroDocumento = ciudadano.NumeroDocumento.Trim();
-
-        if (await _context.Ciudadanos.AnyAsync(x =>
-            x.CorreoElectronico == ciudadano.CorreoElectronico))
-        {
-            ModelState.AddModelError(
-                "CorreoElectronico",
-                "Ya existe un ciudadano registrado con este correo electrónico.");
-        }
-
-        if (await _context.Ciudadanos.AnyAsync(x =>
-            x.NumeroDocumento == ciudadano.NumeroDocumento))
-        {
-            ModelState.AddModelError(
-                "NumeroDocumentoIdentidad",
-                "Ya existe un ciudadano registrado con este número de documento de identidad.");
-        }
-
         if (!ModelState.IsValid)
             return View(ciudadano);
 
-        _context.Ciudadanos.Add(ciudadano);
-        await _context.SaveChangesAsync();
+        var result =
+            await _ciudadanoService.CreateAsync(ciudadano);
+
+        if (!result.Success)
+        {
+            ModelState.AddModelError("", result.Error);
+            return View(ciudadano);
+        }
 
         return RedirectToAction(nameof(Index));
     }
 
-    // GET EDIT
     public async Task<IActionResult> Edit(int id)
     {
-        var ciudadano = await _context.Ciudadanos.FindAsync(id);
+        var ciudadano =
+            await _ciudadanoService.GetByIdAsync(id);
 
         if (ciudadano == null)
             return NotFound();
@@ -73,47 +64,34 @@ public class CiudadanosController : Controller
         return View(ciudadano);
     }
 
-    // POST EDIT
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Ciudadano ciudadano)
+    public async Task<IActionResult> Edit(
+        int id,
+        Ciudadano ciudadano)
     {
         if (id != ciudadano.Id)
             return NotFound();
 
-        ciudadano.NumeroDocumento =
-            ciudadano.NumeroDocumento.Trim();
-
-        if (await _context.Ciudadanos.AnyAsync(x =>
-            x.CorreoElectronico == ciudadano.CorreoElectronico &&
-            x.Id != ciudadano.Id))
-        {
-            ModelState.AddModelError(
-                "CorreoElectronico",
-                "Ya existe un ciudadano registrado con este correo electrónico.");
-        }
-
-        if (await _context.Ciudadanos.AnyAsync(x =>
-            x.NumeroDocumento == ciudadano.NumeroDocumento &&
-            x.Id != ciudadano.Id))
-        {
-            ModelState.AddModelError(
-                "NumeroDocumentoIdentidad",
-                "Ya existe un ciudadano registrado con este número de documento de identidad.");
-        }
-
         if (!ModelState.IsValid)
             return View(ciudadano);
 
-        _context.Update(ciudadano);
-        await _context.SaveChangesAsync();
+        var result =
+            await _ciudadanoService.UpdateAsync(ciudadano);
+
+        if (!result.Success)
+        {
+            ModelState.AddModelError("", result.Error);
+            return View(ciudadano);
+        }
 
         return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> Activar(int id)
     {
-        var ciudadano = await _context.Ciudadanos.FindAsync(id);
+        var ciudadano =
+            await _ciudadanoService.GetByIdAsync(id);
 
         if (ciudadano == null)
             return NotFound();
@@ -125,39 +103,26 @@ public class CiudadanosController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ActivarConfirmado(int id)
     {
-        var ciudadano = await _context.Ciudadanos.FindAsync(id);
+        var result =
+            await _ciudadanoService.ActivarAsync(id);
 
-        if (ciudadano == null)
-            return NotFound();
-
-        if (ExisteEleccionActiva())
+        if (!result.Success)
         {
-            TempData["Error"] =
-                "No se puede activar un ciudadano mientras exista una elección activa.";
-
-            return RedirectToAction(nameof(Index));
+            TempData["Error"] = result.Error;
         }
-
-        if (ciudadano.Activo)
+        else
         {
-            TempData["Error"] =
-                "Este ciudadano ya se encuentra activo.";
-
-            return RedirectToAction(nameof(Index));
+            TempData["Success"] =
+                "Ciudadano activado correctamente.";
         }
-
-        ciudadano.Activo = true;
-
-        await _context.SaveChangesAsync();
-
-        TempData["Success"] = "Ciudadano activado correctamente.";
 
         return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> Desactivar(int id)
     {
-        var ciudadano = await _context.Ciudadanos.FindAsync(id);
+        var ciudadano =
+            await _ciudadanoService.GetByIdAsync(id);
 
         if (ciudadano == null)
             return NotFound();
@@ -169,39 +134,19 @@ public class CiudadanosController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DesactivarConfirmado(int id)
     {
-        var ciudadano = await _context.Ciudadanos.FindAsync(id);
+        var result =
+            await _ciudadanoService.DesactivarAsync(id);
 
-        if (ciudadano == null)
-            return NotFound();
-
-        if (ExisteEleccionActiva())
+        if (!result.Success)
         {
-            TempData["Error"] =
-                "No se puede desactivar un ciudadano mientras exista una elección activa.";
-
-            return RedirectToAction(nameof(Index));
+            TempData["Error"] = result.Error;
         }
-
-        if (!ciudadano.Activo)
+        else
         {
-            TempData["Error"] =
-                "Este ciudadano ya se encuentra inactivo.";
-
-            return RedirectToAction(nameof(Index));
+            TempData["Success"] =
+                "Ciudadano desactivado correctamente.";
         }
-
-        ciudadano.Activo = false;
-
-        await _context.SaveChangesAsync();
-
-        TempData["Success"] = "Ciudadano desactivado correctamente.";
 
         return RedirectToAction(nameof(Index));
-    }
-
-    private bool ExisteEleccionActiva()
-    {
-        // Se implementará cuando exista el módulo Elecciones
-        return false;
     }
 }

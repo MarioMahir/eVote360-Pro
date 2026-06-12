@@ -1,11 +1,16 @@
+using eVote360.Core.Interfaces.Services;
+using eVote360.Core.Services;
 using eVote360.Infrastructure.Data;
+using eVote360.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<ICiudadanoService, CiudadanoService>();
+builder.Services.AddScoped<IPartidoPoliticoService, PartidoPoliticoService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
