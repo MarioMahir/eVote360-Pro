@@ -13,6 +13,7 @@ builder.Services.AddScoped<IPartidoPoliticoService, PartidoPoliticoService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IPuestoElectivoService, PuestoElectivoService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IDirigentePoliticoService, DirigentePoliticoService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

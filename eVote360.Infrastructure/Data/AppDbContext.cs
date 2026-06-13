@@ -18,6 +18,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Usuario> Usuarios { get; set; }
 
+    public DbSet<DirigentePolitico> DirigentesPoliticos { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -29,5 +31,23 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Ciudadano>()
             .HasIndex(c => c.CorreoElectronico)
             .IsUnique();
+
+        modelBuilder.Entity<DirigentePolitico>()
+            .HasIndex(x => x.UsuarioId)
+            .IsUnique();
+
+        modelBuilder.Entity<DirigentePolitico>()
+            .HasIndex(x => x.PartidoPoliticoId)
+            .IsUnique();
+
+        modelBuilder.Entity<DirigentePolitico>()
+            .HasOne(x => x.Usuario)
+            .WithMany()
+            .HasForeignKey(x => x.UsuarioId);
+
+        modelBuilder.Entity<DirigentePolitico>()
+            .HasOne(x => x.PartidoPolitico)
+            .WithMany()
+            .HasForeignKey(x => x.PartidoPoliticoId);
     }
 }
