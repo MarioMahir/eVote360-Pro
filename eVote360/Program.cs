@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using eVote360.Core.Interfaces.Services;
 using eVote360.Core.Services;
 using eVote360.Infrastructure.Data;
@@ -16,6 +17,15 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IDirigentePoliticoService, DirigentePoliticoService>();
 builder.Services.AddScoped<ICandidatoService, CandidatoService>();
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+
+    options.AccessDeniedPath = "/Account/AccessDenied";
+
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+});
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(
@@ -33,8 +43,12 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseRouting();
+
 app.UseStaticFiles();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

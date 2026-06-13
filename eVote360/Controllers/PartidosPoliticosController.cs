@@ -1,10 +1,11 @@
 ﻿using eVote360.Core.Entities;
 using eVote360.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eVote360.Controllers;
 
-// [Authorize(Roles = "Administrador")]
+[Authorize(Roles = "Administrador")]
 public class PartidosPoliticosController : Controller
 {
     private readonly IPartidoPoliticoService _service;

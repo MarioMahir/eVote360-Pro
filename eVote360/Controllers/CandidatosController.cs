@@ -1,9 +1,11 @@
 ﻿using eVote360.Core.DTOs.Candidatos;
 using eVote360.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eVote360.Controllers;
 
+[Authorize(Roles = "Dirigente político")]
 public class CandidatosController : Controller
 {
     private readonly ICandidatoService _candidatoService;
