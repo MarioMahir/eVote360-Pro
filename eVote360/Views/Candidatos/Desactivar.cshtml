@@ -1,0 +1,27 @@
+﻿@model eVote360.Core.Entities.Candidato
+
+<h3>
+    ¿Está seguro que desea desactivar este candidato?
+</h3>
+
+<p>
+    @Model.Nombre @Model.Apellido
+</p>
+
+<form asp-action="ConfirmarDesactivar">
+
+    <input type="hidden"
+           name="id"
+           value="@Model.Id" />
+
+    <a asp-action="Index"
+       class="btn btn-secondary">
+        Cancelar
+    </a>
+
+    <button type="submit"
+            class="btn btn-danger">
+        Aceptar
+    </button>
+
+</form>
