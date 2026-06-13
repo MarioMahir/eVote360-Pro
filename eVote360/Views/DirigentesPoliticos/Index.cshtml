@@ -1,0 +1,68 @@
+﻿@model IEnumerable<eVote360.Core.Entities.DirigentePolitico>
+
+@{
+    ViewData["Title"] = "Asignación de dirigentes políticos";
+}
+
+<h2>Asignación de dirigentes políticos</h2>
+
+<p>
+    <a asp-action="Create"
+       class="btn btn-primary">
+        Agregar asignación
+    </a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Dirigente</th>
+            <th>Usuario</th>
+            <th>Partido</th>
+            <th>Siglas</th>
+            <th>Estado dirigente</th>
+            <th>Estado partido</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.Usuario.Nombre
+                    @item.Usuario.Apellido
+                </td>
+
+                <td>
+                    @item.Usuario.NombreUsuario
+                </td>
+
+                <td>
+                    @item.PartidoPolitico.Nombre
+                </td>
+
+                <td>
+                    @item.PartidoPolitico.Siglas
+                </td>
+
+                <td>
+                    @(item.Usuario.Activo ? "Activo" : "Inactivo")
+                </td>
+
+                <td>
+                    @(item.PartidoPolitico.Activo ? "Activo" : "Inactivo")
+                </td>
+
+                <td>
+                    <a asp-action="Delete"
+                       asp-route-id="@item.Id"
+                       class="btn btn-danger btn-sm">
+                        Eliminar relación
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

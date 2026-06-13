@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace eVote360.Core.DTOs
+namespace eVote360.Core.DTOs.DirigentesPoliticos;
+
+public class DirigentePoliticoCreateDto
 {
-    internal class DirigentePoliticoCreateDto
-    {
-    }
+    [Required]
+    public int UsuarioId { get; set; }
+
+    [Required]
+    public int PartidoPoliticoId { get; set; }
 }
