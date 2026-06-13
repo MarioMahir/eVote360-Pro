@@ -14,6 +14,7 @@ builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IPuestoElectivoService, PuestoElectivoService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IDirigentePoliticoService, DirigentePoliticoService>();
+builder.Services.AddScoped<ICandidatoService, CandidatoService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

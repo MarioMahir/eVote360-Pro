@@ -44,8 +44,7 @@ public class DirigentesPoliticosController : Controller
             return View(dto);
         }
 
-        var resultado =
-            await _service.CreateAsync(dto);
+        var resultado = await _service.CreateAsync(dto);
 
         if (!resultado.Success)
         {

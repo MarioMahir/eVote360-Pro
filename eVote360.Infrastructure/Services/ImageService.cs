@@ -70,4 +70,36 @@ public class ImageService : IImageService
             File.Delete(rutaFisica);
         }
     }
+
+    public async Task<string> SaveCandidatePhotoAsync(
+    IFormFile file,
+    string nombre)
+    {
+        string extension =
+            Path.GetExtension(file.FileName)
+            .ToLower();
+
+        string nombreArchivo =
+            $"{nombre}_{Guid.NewGuid()}{extension}";
+
+        string ruta =
+            Path.Combine(
+                _environment.WebRootPath,
+                "uploads",
+                "candidatos",
+                nombreArchivo);
+
+        Directory.CreateDirectory(
+            Path.Combine(
+                _environment.WebRootPath,
+                "uploads",
+                "candidatos"));
+
+        using var stream =
+            new FileStream(ruta, FileMode.Create);
+
+        await file.CopyToAsync(stream);
+
+        return "/uploads/candidatos/" + nombreArchivo;
+    }
 }
