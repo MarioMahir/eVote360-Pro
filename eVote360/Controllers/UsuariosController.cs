@@ -2,10 +2,11 @@
 using eVote360.Core.Interfaces.Services;
 using eVote360.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eVote360.Controllers;
 
-// [Authorize(Roles = "Administrador")]
+[Authorize(Roles = "Administrador")]
 public class UsuariosController : Controller
 {
     private readonly IUsuarioService _usuarioService;

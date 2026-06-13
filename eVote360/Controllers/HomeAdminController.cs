@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eVote360.Controllers;
 
-public class HomeController : Controller
+[Authorize(Roles = "Administrador")]
+public class HomeAdminController : Controller
 {
-    [AllowAnonymous]
     public IActionResult Index()
     {
         return View();
