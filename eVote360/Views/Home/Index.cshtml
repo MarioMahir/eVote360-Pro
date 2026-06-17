@@ -4,16 +4,48 @@
 
 <h1>eVote360</h1>
 
-<h3>Proceso de votación</h3>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
 
-<form>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+<h3>Funcionalidades del Elector</h3>
+
+<ul>
+    <li>Validar identidad mediante número de documento.</li>
+    <li>Verificar identidad con la cédula.</li>
+    <li>Recibir código de verificación por correo electrónico.</li>
+    <li>Validar código de seguridad.</li>
+    <li>Consultar boleta electoral.</li>
+    <li>Seleccionar candidatos.</li>
+    <li>Confirmar votación.</li>
+    <li>Finalizar proceso de votación.</li>
+    <li>Recibir resumen de votación.</li>
+</ul>
+
+<hr />
+
+<form method="post" asp-controller="Ciudadanos" asp-action="IniciarVotacion">
     <div class="mb-3">
-        <label>Número de documento de identidad</label>
-        <input class="form-control" />
+        <label class="form-label">Número de documento de identidad</label>
+        <input type="text"
+               name="numeroDocumento"
+               class="form-control"
+               placeholder="Ej. 402..."
+               required />
     </div>
 
-    <button class="btn btn-success">
-        Votar
+    <button type="submit" class="btn btn-success">
+        Iniciar Votación
     </button>
 </form>
 
@@ -22,5 +54,5 @@
 <a asp-controller="Account"
    asp-action="Login"
    class="btn btn-primary">
-    Acceder
+    Acceder como Personal
 </a>

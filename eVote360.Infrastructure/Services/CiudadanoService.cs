@@ -25,57 +25,47 @@ public class CiudadanoService : ICiudadanoService
         return await _context.Ciudadanos.FindAsync(id);
     }
 
-    public async Task<(bool Success, string Error)> CreateAsync(
-        Ciudadano ciudadano)
+    public async Task<Ciudadano?> GetByNumeroDocumentoAsync(string numeroDocumento)
     {
-        ciudadano.NumeroDocumento =
-            ciudadano.NumeroDocumento.Trim();
+        return await _context.Ciudadanos
+            .FirstOrDefaultAsync(c => c.NumeroDocumento == numeroDocumento);
+    }
 
-        if (await _context.Ciudadanos.AnyAsync(x =>
-            x.CorreoElectronico == ciudadano.CorreoElectronico))
+    public async Task<(bool Success, string Error)> CreateAsync(Ciudadano ciudadano)
+    {
+        ciudadano.NumeroDocumento = ciudadano.NumeroDocumento.Trim();
+
+        if (await _context.Ciudadanos.AnyAsync(x => x.CorreoElectronico == ciudadano.CorreoElectronico))
         {
-            return (false,
-                "Ya existe un ciudadano registrado con este correo electrónico.");
+            return (false, "Ya existe un ciudadano registrado con este correo electrónico.");
         }
 
-        if (await _context.Ciudadanos.AnyAsync(x =>
-            x.NumeroDocumento == ciudadano.NumeroDocumento))
+        if (await _context.Ciudadanos.AnyAsync(x => x.NumeroDocumento == ciudadano.NumeroDocumento))
         {
-            return (false,
-                "Ya existe un ciudadano registrado con este número de documento de identidad.");
+            return (false, "Ya existe un ciudadano registrado con este número de documento de identidad.");
         }
 
         _context.Ciudadanos.Add(ciudadano);
-
         await _context.SaveChangesAsync();
 
         return (true, string.Empty);
     }
 
-    public async Task<(bool Success, string Error)> UpdateAsync(
-        Ciudadano ciudadano)
+    public async Task<(bool Success, string Error)> UpdateAsync(Ciudadano ciudadano)
     {
-        ciudadano.NumeroDocumento =
-            ciudadano.NumeroDocumento.Trim();
+        ciudadano.NumeroDocumento = ciudadano.NumeroDocumento.Trim();
 
-        if (await _context.Ciudadanos.AnyAsync(x =>
-            x.CorreoElectronico == ciudadano.CorreoElectronico &&
-            x.Id != ciudadano.Id))
+        if (await _context.Ciudadanos.AnyAsync(x => x.CorreoElectronico == ciudadano.CorreoElectronico && x.Id != ciudadano.Id))
         {
-            return (false,
-                "Ya existe un ciudadano registrado con este correo electrónico.");
+            return (false, "Ya existe un ciudadano registrado con este correo electrónico.");
         }
 
-        if (await _context.Ciudadanos.AnyAsync(x =>
-            x.NumeroDocumento == ciudadano.NumeroDocumento &&
-            x.Id != ciudadano.Id))
+        if (await _context.Ciudadanos.AnyAsync(x => x.NumeroDocumento == ciudadano.NumeroDocumento && x.Id != ciudadano.Id))
         {
-            return (false,
-                "Ya existe un ciudadano registrado con este número de documento de identidad.");
+            return (false, "Ya existe un ciudadano registrado con este número de documento de identidad.");
         }
 
         _context.Update(ciudadano);
-
         await _context.SaveChangesAsync();
 
         return (true, string.Empty);
@@ -83,18 +73,15 @@ public class CiudadanoService : ICiudadanoService
 
     public async Task<(bool Success, string Error)> ActivarAsync(int id)
     {
-        var ciudadano =
-            await _context.Ciudadanos.FindAsync(id);
+        var ciudadano = await _context.Ciudadanos.FindAsync(id);
 
         if (ciudadano == null)
             return (false, "Ciudadano no encontrado.");
 
         if (ciudadano.Activo)
-            return (false,
-                "Este ciudadano ya se encuentra activo.");
+            return (false, "Este ciudadano ya se encuentra activo.");
 
         ciudadano.Activo = true;
-
         await _context.SaveChangesAsync();
 
         return (true, string.Empty);
@@ -102,18 +89,15 @@ public class CiudadanoService : ICiudadanoService
 
     public async Task<(bool Success, string Error)> DesactivarAsync(int id)
     {
-        var ciudadano =
-            await _context.Ciudadanos.FindAsync(id);
+        var ciudadano = await _context.Ciudadanos.FindAsync(id);
 
         if (ciudadano == null)
             return (false, "Ciudadano no encontrado.");
 
         if (!ciudadano.Activo)
-            return (false,
-                "Este ciudadano ya se encuentra inactivo.");
+            return (false, "Este ciudadano ya se encuentra inactivo.");
 
         ciudadano.Activo = false;
-
         await _context.SaveChangesAsync();
 
         return (true, string.Empty);

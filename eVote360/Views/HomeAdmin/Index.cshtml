@@ -1,43 +1,53 @@
-﻿<h1>Home Administrador</h1>
+﻿<h1>Panel del Administrador</h1>
 
 <p>
     Bienvenido @User.Identity!.Name
 </p>
 
+<h3>Funcionalidades del Administrador</h3>
+
 <ul>
     <li>
         <a asp-controller="PuestosElectivos"
            asp-action="Index">
-            Puestos Electivos
+            Gestionar Puestos Electivos
         </a>
     </li>
 
     <li>
         <a asp-controller="Ciudadanos"
            asp-action="Index">
-            Ciudadanos
+            Gestionar Ciudadanos
         </a>
     </li>
 
     <li>
         <a asp-controller="PartidosPoliticos"
            asp-action="Index">
-            Partidos Políticos
+            Gestionar Partidos Políticos
         </a>
     </li>
 
     <li>
         <a asp-controller="Usuarios"
            asp-action="Index">
-            Usuarios
+            Gestionar Usuarios
         </a>
     </li>
 
     <li>
         <a asp-controller="DirigentesPoliticos"
            asp-action="Index">
-            Dirigentes Políticos
+            Gestionar Dirigentes Políticos
         </a>
+    </li>
+
+    <li>
+        Gestionar Elecciones
+    </li>
+
+    <li>
+        Consultar Resultados Electorales
     </li>
 </ul>
 

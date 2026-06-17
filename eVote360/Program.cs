@@ -1,55 +1,50 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using eVote360.Core.Interfaces.Services;
-using eVote360.Core.Services;
-using eVote360.Infrastructure.Data;
-using eVote360.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ==========================================
+// 1. REGISTRO DE SERVICIOS (builder.Services)
+// ==========================================
+
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<ICiudadanoService, CiudadanoService>();
-builder.Services.AddScoped<IPartidoPoliticoService, PartidoPoliticoService>();
-builder.Services.AddScoped<IImageService, ImageService>();
-builder.Services.AddScoped<IPuestoElectivoService, PuestoElectivoService>();
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-builder.Services.AddScoped<IDirigentePoliticoService, DirigentePoliticoService>();
-builder.Services.AddScoped<ICandidatoService, CandidatoService>();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+// Configuración de la Base de Datos (SQL Server)
+builder.Services.AddDbContext<eVote360.Infrastructure.Data.AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// BUSCADOR AUTOMÁTICO DE SERVICIOS: 
+// Esto busca ICiudadanoService y su clase en todo el proyecto sin importar el namespace.
+var coreAssembly = Assembly.Load("eVote360.Core");
+var infraAssembly = Assembly.Load("eVote360.Infrastructure");
+
+if (coreAssembly != null && infraAssembly != null)
 {
-    options.LoginPath = "/Account/Login";
+    var iCiudadano = coreAssembly.GetTypes().FirstOrDefault(t => t.Name == "ICiudadanoService");
+    var tCiudadano = infraAssembly.GetTypes().FirstOrDefault(t => t.Name == "CiudadanoService");
 
-    options.AccessDeniedPath = "/Account/AccessDenied";
-
-    options.ExpireTimeSpan = TimeSpan.FromHours(8);
-});
-builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+    if (iCiudadano != null && tCiudadano != null)
+    {
+        builder.Services.AddScoped(iCiudadano, tCiudadano);
+    }
+}
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ==========================================
+// 2. CONFIGURACIÓN DEL PIPELINE (Middleware)
+// ==========================================
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
-app.UseRouting();
-
 app.UseStaticFiles();
 
-app.UseAuthentication();
-
+app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -58,6 +53,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

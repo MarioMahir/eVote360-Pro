@@ -1,25 +1,28 @@
-﻿@model eVote360.Core.DTOs.Auth.LoginDto
+﻿@model eVote360.Core.Entities.Usuario
 
-<h2>Iniciar sesión</h2>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Iniciar Sesión";
+}
 
-<form asp-action="Login" method="post">
+<div class="container mt-5" style="max-width: 400px;">
+    <h2>Iniciar sesión</h2>
 
-    <div>
-        <label>Usuario</label>
-        <input asp-for="NombreUsuario" />
-        <span asp-validation-for="NombreUsuario"></span>
-    </div>
+    <form asp-controller="Account" asp-action="Login" method="post">
+        @Html.AntiForgeryToken()
 
-    <div>
-        <label>Contraseña</label>
-        <input asp-for="Contrasena" type="password" />
-        <span asp-validation-for="Contrasena"></span>
-    </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <button type="submit">
-        Acceder
-    </button>
+        <div class="mb-3">
+            <label class="form-label">Usuario</label>
+            <input type="text" name="usuario" class="form-control" required />
+        </div>
 
-</form>
+        <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input type="password" name="contrasena" class="form-control" required />
+        </div>
 
-<div asp-validation-summary="All"></div>
+        <button type="submit" class="btn btn-primary w-100">Acceder</button>
+    </form>
+</div>

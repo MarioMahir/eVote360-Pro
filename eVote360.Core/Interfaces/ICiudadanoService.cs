@@ -6,6 +6,7 @@ public interface ICiudadanoService
 {
     Task<List<Ciudadano>> GetAllAsync();
     Task<Ciudadano?> GetByIdAsync(int id);
+    Task<Ciudadano?> GetByNumeroDocumentoAsync(string numeroDocumento);
 
     Task<(bool Success, string Error)> CreateAsync(Ciudadano ciudadano);
 
