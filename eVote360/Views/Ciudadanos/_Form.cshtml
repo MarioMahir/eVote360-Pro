@@ -1,0 +1,40 @@
+@model eVote360.ViewModels.Admin.CiudadanoViewModel
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+<input type="hidden" asp-for="Id" />
+<input type="hidden" asp-for="DocumentoBloqueado" />
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="Nombre" class="form-label"></label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="Apellido" class="form-label"></label>
+        <input asp-for="Apellido" class="form-control" />
+        <span asp-validation-for="Apellido" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="CorreoElectronico" class="form-label"></label>
+    <input asp-for="CorreoElectronico" type="email" class="form-control" />
+    <span asp-validation-for="CorreoElectronico" class="text-danger"></span>
+    <div class="form-text">Se usará para enviar el código de verificación y el resumen de votación.</div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="NumeroDocumento" class="form-label"></label>
+    <input asp-for="NumeroDocumento" class="form-control" readonly="@Model.DocumentoBloqueado" placeholder="Ej: 00112345678" />
+    <span asp-validation-for="NumeroDocumento" class="text-danger"></span>
+    @if (Model.DocumentoBloqueado)
+    {
+        <div class="form-text text-warning">No se puede modificar el número de documento de identidad de este ciudadano porque ya participó en una elección.</div>
+    }
+</div>
+
+<div class="form-check mb-3">
+    <input asp-for="Activo" class="form-check-input" />
+    <label asp-for="Activo" class="form-check-label"></label>
+</div>

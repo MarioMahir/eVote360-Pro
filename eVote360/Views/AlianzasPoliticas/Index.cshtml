@@ -1,0 +1,132 @@
+@model eVote360.ViewModels.Dirigente.AlianzasIndexViewModel
+@{
+    ViewData["Title"] = "Alianzas políticas";
+    bool bloqueado = Model.ExisteEleccionActiva;
+    var partido = (eVote360.Core.Entities.PartidoPolitico)ViewBag.Partido;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-0">Alianzas políticas</h1>
+        <small class="text-muted">@partido.Nombre (@partido.Siglas)</small>
+    </div>
+</div>
+
+@if (bloqueado)
+{
+    <div class="alert alert-warning">No se pueden modificar alianzas políticas mientras exista una elección activa.</div>
+}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white"><h2 class="h5 mb-0">Solicitudes pendientes de responder</h2></div>
+    <table class="table align-middle mb-0">
+        <thead class="table-light"><tr><th>Partido solicitante</th><th>Fecha de solicitud</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
+        <tbody>
+            @if (!Model.PendientesDeResponder.Any())
+            {
+                <tr><td colspan="4" class="text-center text-muted py-3">No tiene solicitudes pendientes de responder.</td></tr>
+            }
+            @foreach (var s in Model.PendientesDeResponder)
+            {
+                <tr>
+                    <td><img src="@s.LogoUrl" class="logo-partido-sm me-2" alt="" />@s.PartidoNombre (@s.PartidoSiglas)</td>
+                    <td>@s.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td><span class="badge bg-warning text-dark">@s.EstadoTexto</span></td>
+                    <td class="text-end">
+                        @if (bloqueado)
+                        {
+                            <button class="btn btn-sm btn-outline-secondary" disabled>Aceptar</button>
+                            <button class="btn btn-sm btn-outline-secondary" disabled>Rechazar</button>
+                        }
+                        else
+                        {
+                            <a asp-action="Aceptar" asp-route-id="@s.Id" class="btn btn-sm btn-success">Aceptar</a>
+                            <a asp-action="Rechazar" asp-route-id="@s.Id" class="btn btn-sm btn-outline-danger">Rechazar</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">Solicitudes realizadas</h2>
+        @if (bloqueado)
+        {
+            <button class="btn btn-sm btn-secondary" disabled>Crear solicitud de alianza</button>
+        }
+        else
+        {
+            <a asp-action="Create" class="btn btn-sm btn-primary">Crear solicitud de alianza</a>
+        }
+    </div>
+    <table class="table align-middle mb-0">
+        <thead class="table-light"><tr><th>Partido destino</th><th>Fecha de solicitud</th><th>Estado</th><th class="text-end">Acción</th></tr></thead>
+        <tbody>
+            @if (!Model.Realizadas.Any())
+            {
+                <tr><td colspan="4" class="text-center text-muted py-3">No ha enviado solicitudes de alianza.</td></tr>
+            }
+            @foreach (var s in Model.Realizadas)
+            {
+                <tr>
+                    <td><img src="@s.LogoUrl" class="logo-partido-sm me-2" alt="" />@s.PartidoNombre (@s.PartidoSiglas)</td>
+                    <td>@s.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        @switch (s.Estado)
+                        {
+                            case eVote360.Core.Entities.EstadoAlianza.Pendiente: <span class="badge bg-warning text-dark">@s.EstadoTexto</span>; break;
+                            case eVote360.Core.Entities.EstadoAlianza.Aceptada: <span class="badge bg-success">@s.EstadoTexto</span>; break;
+                            default: <span class="badge bg-secondary">@s.EstadoTexto</span>; break;
+                        }
+                    </td>
+                    <td class="text-end">
+                        @if (s.PuedeEliminar)
+                        {
+                            @if (bloqueado)
+                            {
+                                <button class="btn btn-sm btn-outline-secondary" disabled>Eliminar</button>
+                            }
+                            else
+                            {
+                                <a asp-action="EliminarSolicitud" asp-route-id="@s.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white"><h2 class="h5 mb-0">Alianzas vigentes</h2></div>
+    <table class="table align-middle mb-0">
+        <thead class="table-light"><tr><th>Partido aliado</th><th>Fecha de aceptación</th><th class="text-end">Acción</th></tr></thead>
+        <tbody>
+            @if (!Model.Vigentes.Any())
+            {
+                <tr><td colspan="3" class="text-center text-muted py-3">No tiene alianzas vigentes.</td></tr>
+            }
+            @foreach (var a in Model.Vigentes)
+            {
+                <tr>
+                    <td><img src="@a.LogoUrl" class="logo-partido-sm me-2" alt="" />@a.PartidoAliadoNombre (@a.PartidoAliadoSiglas)</td>
+                    <td>@a.FechaAceptacion.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td class="text-end">
+                        @if (bloqueado)
+                        {
+                            <button class="btn btn-sm btn-outline-secondary" disabled>Eliminar alianza</button>
+                        }
+                        else
+                        {
+                            <a asp-action="EliminarAlianza" asp-route-id="@a.Id" class="btn btn-sm btn-outline-danger">Eliminar alianza</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,34 @@
+@model eVote360.ViewModels.Dirigente.AsignacionCreateViewModel
+@{
+    ViewData["Title"] = "Agregar asignación";
+}
+<div class="row justify-content-center"><div class="col-lg-6"><div class="card shadow-sm"><div class="card-body p-4">
+    <h1 class="h4 mb-1">Agregar asignación</h1>
+    <p class="text-muted small">Candidatos propios activos sin puesto, o candidatos de partidos aliados que ya tengan un puesto en su partido de origen (solo pueden aspirar al mismo puesto).</p>
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="CandidatoId" class="form-label"></label>
+            <select asp-for="CandidatoId" asp-items="Model.Candidatos" class="form-select">
+                <option value="">Seleccione un candidato</option>
+            </select>
+            <span asp-validation-for="CandidatoId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PuestoElectivoId" class="form-label"></label>
+            <select asp-for="PuestoElectivoId" asp-items="Model.Puestos" class="form-select">
+                <option value="">Seleccione un puesto electivo</option>
+            </select>
+            <span asp-validation-for="PuestoElectivoId" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary">Volver atrás</a>
+            <button type="submit" class="btn btn-primary">Crear asignación</button>
+        </div>
+    </form>
+</div></div></div></div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

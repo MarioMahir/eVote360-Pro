@@ -1,0 +1,73 @@
+@model List<eVote360.Core.DTOs.Votacion.PuestoBoletaDto>
+@{
+    ViewData["Title"] = "Puestos electivos";
+    bool todos = ViewBag.TodosSeleccionados ?? false;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <partial name="_Pasos" model="4" />
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div>
+                <h1 class="h4 mb-0">Puestos electivos disponibles</h1>
+                <small class="text-muted">Seleccione una opción para cada puesto. Puede modificar su selección hasta finalizar.</small>
+            </div>
+            <span class="badge @(todos ? "bg-success" : "bg-secondary") fs-6">
+                @Model.Count(p => p.Seleccionado) de @Model.Count seleccionados
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle bg-white shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>Puesto</th>
+                        <th class="text-center">Partidos participantes</th>
+                        <th class="text-center">Candidatos reales</th>
+                        <th>Estado de selección</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@p.Nombre</div>
+                                <small class="text-muted">@p.Descripcion</small>
+                            </td>
+                            <td class="text-center">@p.PartidosParticipantes</td>
+                            <td class="text-center">@p.CandidatosReales</td>
+                            <td>
+                                @if (p.Seleccionado)
+                                {
+                                    <span class="badge bg-success">Seleccionado</span> <span>@p.SeleccionTexto</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Votar" asp-route-id="@p.PuestoElectivoId" class="btn btn-sm @(p.Seleccionado ? "btn-outline-primary" : "btn-primary")">
+                                    @(p.Seleccionado ? "Modificar" : "Seleccionar")
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <form asp-action="Finalizar" method="post" class="d-flex justify-content-between mt-3">
+            @Html.AntiForgeryToken()
+            <a asp-action="Cancelar" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-success btn-lg" @(todos ? "" : "disabled")>Finalizar votación</button>
+        </form>
+        @if (!todos)
+        {
+            <p class="small text-muted mt-2 text-end">Debe seleccionar una opción para todos los puestos antes de finalizar.</p>
+        }
+    </div>
+</div>

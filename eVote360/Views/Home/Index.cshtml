@@ -1,0 +1,41 @@
+@model eVote360.ViewModels.Elector.DocumentoViewModel
+@{
+    ViewData["Title"] = "Votación";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="text-center mb-4">
+            <div class="display-6 fw-bold text-primary">eVote360</div>
+            <p class="text-muted">Proceso de votación electrónica</p>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h4 mb-3">Iniciar votación</h1>
+                <p class="text-muted">Ingrese su número de documento de identidad para verificar si puede participar en la elección activa.</p>
+
+                <form asp-action="Index" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="NumeroDocumento" class="form-label"></label>
+                        <input asp-for="NumeroDocumento" class="form-control form-control-lg" placeholder="Ej: 00112345678" autocomplete="off" autofocus />
+                        <span asp-validation-for="NumeroDocumento" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-lg w-100">Votar</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="text-center mt-3 small text-muted">
+            ¿Es administrador o dirigente político? Use la opción <a asp-controller="Account" asp-action="Login">Acceder</a>.
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

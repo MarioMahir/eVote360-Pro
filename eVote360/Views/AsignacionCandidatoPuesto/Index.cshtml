@@ -1,0 +1,69 @@
+@model List<eVote360.Core.DTOs.Asignaciones.AsignacionListDto>
+@{
+    ViewData["Title"] = "Asignar candidato a puesto";
+    bool bloqueado = ViewBag.ExisteEleccionActiva ?? false;
+    var partido = (eVote360.Core.Entities.PartidoPolitico)ViewBag.Partido;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-0">Asignar candidato a puesto</h1>
+        <small class="text-muted">@partido.Nombre (@partido.Siglas)</small>
+    </div>
+    @if (bloqueado)
+    {
+        <button class="btn btn-secondary" disabled>Agregar asignación</button>
+    }
+    else
+    {
+        <a asp-action="Create" class="btn btn-primary">Agregar asignación</a>
+    }
+</div>
+
+<partial name="_BloqueoEleccionActiva" model="@("No se pueden modificar asignaciones de candidatos a puestos mientras exista una elección activa.")" />
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle bg-white shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th style="width:70px"></th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Partido de origen</th>
+                <th>Puesto electivo asociado</th>
+                <th>Tipo de candidatura</th>
+                <th class="text-end">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" class="text-center text-muted py-4">Su partido todavía no tiene candidatos asignados a puestos.</td></tr>
+            }
+            @foreach (var a in Model)
+            {
+                <tr>
+                    <td><img src="@a.FotoUrl" alt="" class="foto-candidato-sm" /></td>
+                    <td>@a.CandidatoNombre</td>
+                    <td>@a.CandidatoApellido</td>
+                    <td>@a.PartidoOrigen <span class="badge bg-light text-dark border">@a.PartidoOrigenSiglas</span></td>
+                    <td><span class="badge bg-primary">@a.PuestoElectivo</span></td>
+                    <td>
+                        @if (a.EsAliado) { <span class="badge bg-info text-dark">Aliado</span> }
+                        else { <span class="badge bg-secondary">Propio</span> }
+                    </td>
+                    <td class="text-end">
+                        @if (bloqueado)
+                        {
+                            <button class="btn btn-sm btn-outline-secondary" disabled>Eliminar relación</button>
+                        }
+                        else
+                        {
+                            <a asp-action="Delete" asp-route-id="@a.Id" class="btn btn-sm btn-outline-danger">Eliminar relación</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

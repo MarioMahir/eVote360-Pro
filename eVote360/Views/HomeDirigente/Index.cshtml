@@ -1,0 +1,72 @@
+@model eVote360.ViewModels.Dirigente.HomeDirigenteViewModel
+@{
+    ViewData["Title"] = "Home del dirigente";
+}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body d-flex align-items-center gap-4 flex-wrap">
+        <img src="@Model.Partido.LogoUrl" alt="Logo de @Model.Partido.Siglas" class="logo-partido-grande" />
+        <div class="flex-grow-1">
+            <div class="text-muted small">Partido político asignado</div>
+            <h1 class="h3 mb-1">@Model.Partido.Nombre <span class="text-muted">(@Model.Partido.Siglas)</span></h1>
+            @if (!string.IsNullOrWhiteSpace(Model.Partido.Descripcion))
+            {
+                <p class="mb-0 text-muted">@Model.Partido.Descripcion</p>
+            }
+        </div>
+        @if (Model.ExisteEleccionActiva)
+        {
+            <span class="badge bg-success fs-6">Hay una elección activa</span>
+        }
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    @{
+        var ind = Model.Indicadores;
+        var indicadores = new[]
+        {
+            ("Candidatos activos", ind.CandidatosActivos, "text-success"),
+            ("Candidatos inactivos", ind.CandidatosInactivos, "text-secondary"),
+            ("Alianzas políticas", ind.AlianzasVigentes, "text-primary"),
+            ("Solicitudes pendientes de responder", ind.SolicitudesPendientesDeResponder, "text-warning"),
+            ("Candidatos asignados a puestos", ind.CandidatosAsignados, "text-info")
+        };
+    }
+    @foreach (var (titulo, valor, clase) in indicadores)
+    {
+        <div class="col-6 col-lg">
+            <div class="card indicador h-100 shadow-sm text-center">
+                <div class="card-body">
+                    <div class="display-6 fw-bold @clase">@valor</div>
+                    <div class="small text-muted">@titulo</div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="row g-3">
+    @{
+        var modulos = new[]
+        {
+            ("Candidatos", "Candidatos", "Registre y administre los candidatos de su partido", "🧑‍💼"),
+            ("Asignar candidato a puesto", "AsignacionCandidatoPuesto", "Postule candidatos propios o aliados a los puestos", "📋"),
+            ("Alianzas políticas", "AlianzasPoliticas", "Solicite y responda alianzas con otros partidos", "🤝")
+        };
+    }
+    @foreach (var (titulo, controlador, descripcion, icono) in modulos)
+    {
+        <div class="col-md-4">
+            <a asp-controller="@controlador" asp-action="Index" class="card modulo h-100 text-decoration-none shadow-sm">
+                <div class="card-body d-flex gap-3 align-items-start">
+                    <span class="fs-2">@icono</span>
+                    <div>
+                        <div class="fw-semibold text-dark">@titulo</div>
+                        <div class="small text-muted">@descripcion</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>

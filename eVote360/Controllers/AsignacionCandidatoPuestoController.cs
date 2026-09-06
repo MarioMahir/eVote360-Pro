@@ -1,176 +1,104 @@
-﻿using eVote360.Core.Entities;
-using eVote360.Infrastructure.Data;
-using eVote360.ViewModels.AsignacionCandidatoPuesto;
+using eVote360.Core.Constants;
+using eVote360.Core.Interfaces.Services;
+using eVote360.Filters;
+using eVote360.ViewModels;
+using eVote360.ViewModels.Dirigente;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
-namespace eVote360.Controllers
+namespace eVote360.Controllers;
+
+[Authorize(Roles = Roles.DirigentePolitico)]
+[DirigenteConPartido]
+public class AsignacionCandidatoPuestoController : BaseController
 {
-    public class AsignacionCandidatoPuestoController : Controller
+    private readonly IAsignacionCandidatoPuestoService _asignaciones;
+    private readonly IEleccionService _elecciones;
+
+    public AsignacionCandidatoPuestoController(IAsignacionCandidatoPuestoService asignaciones, IEleccionService elecciones)
     {
-        private readonly AppDbContext _context;
+        _asignaciones = asignaciones;
+        _elecciones = elecciones;
+    }
 
-        public AsignacionCandidatoPuestoController(AppDbContext context)
+    public async Task<IActionResult> Index()
+    {
+        ViewBag.ExisteEleccionActiva = await _elecciones.ExisteEleccionActivaAsync();
+        return View(await _asignaciones.GetAllAsync(PartidoActual.Id));
+    }
+
+    public async Task<IActionResult> Create()
+    {
+        var model = new AsignacionCreateViewModel();
+        await CargarCombos(model);
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(AsignacionCreateViewModel model)
+    {
+        if (!ModelState.IsValid)
         {
-            _context = context;
-        }
-
-        // GET: AsignacionCandidatoPuesto
-        public async Task<IActionResult> Index()
-        {
-            var asignaciones = await _context.AsignacionesCandidatoPuesto
-                .Include(x => x.Eleccion)
-                .Include(x => x.Candidato)
-                .Include(x => x.PuestoElectivo)
-                .OrderByDescending(x => x.FechaAsignacion)
-                .ToListAsync();
-
-            return View(asignaciones);
-        }
-
-        // GET: AsignacionCandidatoPuesto/Create
-        public async Task<IActionResult> Create()
-        {
-            var model = new AsignacionFormViewModel();
-
             await CargarCombos(model);
-
             return View(model);
         }
 
-        // POST: AsignacionCandidatoPuesto/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AsignacionFormViewModel model)
+        var resultado = await _asignaciones.CreateAsync(PartidoActual.Id, model.CandidatoId, model.PuestoElectivoId);
+
+        if (!resultado.Success)
         {
-            if (!ModelState.IsValid)
-            {
-                await CargarCombos(model);
-                return View(model);
-            }
+            AgregarErrores(resultado.Error);
+            await CargarCombos(model);
+            return View(model);
+        }
 
-            var eleccion = await _context.Elecciones
-                .FirstOrDefaultAsync(x => x.Id == model.EleccionId);
+        MensajeExito("La asignación fue creada correctamente.");
+        return RedirectToAction(nameof(Index));
+    }
 
-            if (eleccion == null)
-            {
-                ModelState.AddModelError("", "La elección seleccionada no existe.");
+    public async Task<IActionResult> Delete(int id)
+    {
+        var asignacion = await _asignaciones.GetByIdAsync(id, PartidoActual.Id);
 
-                await CargarCombos(model);
-                return View(model);
-            }
-
-            if (!eleccion.Activa)
-            {
-                ModelState.AddModelError("", "La elección seleccionada está inactiva.");
-
-                await CargarCombos(model);
-                return View(model);
-            }
-
-            var candidato = await _context.Candidatos
-                .FirstOrDefaultAsync(x => x.Id == model.CandidatoId);
-
-            if (candidato == null)
-            {
-                ModelState.AddModelError("", "El candidato seleccionado no existe.");
-
-                await CargarCombos(model);
-                return View(model);
-            }
-
-            if (!candidato.Activo)
-            {
-                ModelState.AddModelError("", "El candidato está inactivo.");
-
-                await CargarCombos(model);
-                return View(model);
-            }
-
-            var puesto = await _context.PuestosElectivos
-                .FirstOrDefaultAsync(x => x.Id == model.PuestoElectivoId);
-
-            if (puesto == null)
-            {
-                ModelState.AddModelError("", "El puesto electivo seleccionado no existe.");
-
-                await CargarCombos(model);
-                return View(model);
-            }
-
-            if (!puesto.Activo)
-            {
-                ModelState.AddModelError("", "El puesto electivo está inactivo.");
-
-                await CargarCombos(model);
-                return View(model);
-            }
-
-            var existe = await _context.AsignacionesCandidatoPuesto
-                .AnyAsync(x =>
-                    x.EleccionId == model.EleccionId &&
-                    x.CandidatoId == model.CandidatoId &&
-                    x.PuestoElectivoId == model.PuestoElectivoId);
-
-            if (existe)
-            {
-                ModelState.AddModelError("", "Esta asignación ya existe.");
-
-                await CargarCombos(model);
-                return View(model);
-            }
-
-            var asignacion = new AsignacionCandidatoPuesto
-            {
-                EleccionId = model.EleccionId,
-                CandidatoId = model.CandidatoId,
-                PuestoElectivoId = model.PuestoElectivoId,
-                FechaAsignacion = DateTime.Now,
-                Activo = true
-            };
-
-            _context.AsignacionesCandidatoPuesto.Add(asignacion);
-
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] =
-                "La asignación fue creada correctamente.";
-
+        if (asignacion == null)
+        {
+            MensajeError("No tiene permisos para eliminar esta asignación.");
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task CargarCombos(AsignacionFormViewModel model)
+        return View("Confirmar", new ConfirmacionViewModel
         {
-            model.Elecciones = await _context.Elecciones
-                .Where(x => x.Activa)
-                .OrderBy(x => x.Nombre)
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Nombre
-                })
-                .ToListAsync();
+            Titulo = "Eliminar relación",
+            Mensaje = "¿Está seguro que desea desvincular este candidato de este puesto electivo?",
+            Detalle = $"{asignacion.Candidato.NombreCompleto} — {asignacion.PuestoElectivo.Nombre}",
+            Accion = nameof(ConfirmDelete),
+            Controlador = "AsignacionCandidatoPuesto",
+            Id = id,
+            TextoAceptar = "Eliminar relación",
+            ClaseBoton = "btn-danger"
+        });
+    }
 
-            model.Candidatos = await _context.Candidatos
-                .Where(x => x.Activo)
-                .OrderBy(x => x.Nombre)
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Nombre + " " + x.Apellido
-                })
-                .ToListAsync();
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConfirmDelete(int id)
+    {
+        var resultado = await _asignaciones.DeleteAsync(id, PartidoActual.Id);
 
-            model.PuestosElectivos = await _context.PuestosElectivos
-                .Where(x => x.Activo)
-                .OrderBy(x => x.Nombre)
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Nombre
-                })
-                .ToListAsync();
-        }
+        if (resultado.Success) MensajeExito("La relación fue eliminada.");
+        else MensajeError(resultado.Error);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    private async Task CargarCombos(AsignacionCreateViewModel model)
+    {
+        var candidatos = await _asignaciones.GetCandidatosDisponiblesAsync(PartidoActual.Id);
+        var puestos = await _asignaciones.GetPuestosDisponiblesAsync(PartidoActual.Id);
+
+        model.Candidatos = candidatos.Select(c => new SelectListItem(c.Texto, c.Id.ToString())).ToList();
+        model.Puestos = puestos.Select(p => new SelectListItem(p.Nombre, p.Id.ToString())).ToList();
     }
 }

@@ -1,0 +1,39 @@
+@model eVote360.ViewModels.Elector.CedulaViewModel
+@{
+    ViewData["Title"] = "Validación de identidad";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <partial name="_Pasos" model="2" />
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h4 mb-2">Validación de identidad</h1>
+                <p class="text-muted">Suba una foto de la parte frontal de su cédula. El sistema leerá el número de documento con OCR y lo comparará con el que ingresó.</p>
+
+                <ul class="small text-muted">
+                    <li>Solo la parte frontal, con buena iluminación.</li>
+                    <li>Debe leerse claramente el número de documento.</li>
+                    <li>Formatos: .jpg, .jpeg o .png. No borrosa, cortada ni oscura.</li>
+                </ul>
+
+                <form asp-action="ValidarIdentidad" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Imagen" class="form-label"></label>
+                        <input asp-for="Imagen" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-control" />
+                        <span asp-validation-for="Imagen" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a asp-action="Cancelar" class="btn btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Validar identidad</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

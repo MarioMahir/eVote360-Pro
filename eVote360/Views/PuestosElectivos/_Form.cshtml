@@ -1,0 +1,26 @@
+@model eVote360.ViewModels.Admin.PuestoElectivoViewModel
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+<input type="hidden" asp-for="Id" />
+<input type="hidden" asp-for="NombreBloqueado" />
+
+<div class="mb-3">
+    <label asp-for="Nombre" class="form-label"></label>
+    <input asp-for="Nombre" class="form-control" readonly="@Model.NombreBloqueado" />
+    <span asp-validation-for="Nombre" class="text-danger"></span>
+    @if (Model.NombreBloqueado)
+    {
+        <div class="form-text text-warning">No se puede modificar el nombre de este puesto electivo porque ya fue utilizado en una elección.</div>
+    }
+</div>
+
+<div class="mb-3">
+    <label asp-for="Descripcion" class="form-label"></label>
+    <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+    <span asp-validation-for="Descripcion" class="text-danger"></span>
+</div>
+
+<div class="form-check mb-3">
+    <input asp-for="Activo" class="form-check-input" />
+    <label asp-for="Activo" class="form-check-label"></label>
+</div>

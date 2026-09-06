@@ -5,3 +5,6 @@ obj/
 
 *.user
 *.suo
+
+# Correos simulados y datos locales de la app
+eVote360/App_Data/

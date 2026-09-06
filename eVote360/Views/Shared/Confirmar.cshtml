@@ -1,0 +1,24 @@
+@model ConfirmacionViewModel
+@{
+    ViewData["Title"] = Model.Titulo;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">@Model.Titulo</h2>
+                <p class="lead mb-2">@Model.Mensaje</p>
+                @if (!string.IsNullOrWhiteSpace(Model.Detalle))
+                {
+                    <p class="text-muted">@Model.Detalle</p>
+                }
+                <form asp-controller="@Model.Controlador" asp-action="@Model.Accion" asp-route-id="@Model.Id" method="post" class="d-flex gap-2 mt-4">
+                    @Html.AntiForgeryToken()
+                    <a asp-controller="@Model.Controlador" asp-action="@Model.AccionCancelar" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn @Model.ClaseBoton">@Model.TextoAceptar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

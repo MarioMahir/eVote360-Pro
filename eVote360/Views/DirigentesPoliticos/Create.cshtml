@@ -1,0 +1,33 @@
+@model eVote360.Core.DTOs.DirigentesPoliticos.DirigentePoliticoCreateDto
+@{
+    ViewData["Title"] = "Agregar asignación";
+}
+<div class="row justify-content-center"><div class="col-lg-6"><div class="card shadow-sm"><div class="card-body p-4">
+    <h1 class="h4 mb-1">Agregar asignación</h1>
+    <p class="text-muted small">Relacione un usuario activo con rol Dirigente político con un partido activo. La relación es uno a uno.</p>
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="UsuarioId" class="form-label">Dirigente político</label>
+            <select asp-for="UsuarioId" asp-items="ViewBag.Dirigentes" class="form-select">
+                <option value="">Seleccione un dirigente</option>
+            </select>
+            <span asp-validation-for="UsuarioId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PartidoPoliticoId" class="form-label">Partido político</label>
+            <select asp-for="PartidoPoliticoId" asp-items="ViewBag.Partidos" class="form-select">
+                <option value="">Seleccione un partido</option>
+            </select>
+            <span asp-validation-for="PartidoPoliticoId" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary">Volver atrás</a>
+            <button type="submit" class="btn btn-primary">Crear asignación</button>
+        </div>
+    </form>
+</div></div></div></div>

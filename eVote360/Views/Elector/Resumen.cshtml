@@ -1,0 +1,48 @@
+@model eVote360.Core.DTOs.Votacion.ResumenVotacionDto
+@{
+    ViewData["Title"] = "Votación completada";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <partial name="_Pasos" model="5" />
+
+        <div class="card shadow-sm border-success">
+            <div class="card-body p-4">
+                <div class="text-center mb-3">
+                    <div class="display-5 text-success">✓</div>
+                    <h1 class="h4">Su proceso de votación ha sido completado correctamente</h1>
+                    <p class="text-muted mb-0">Enviamos un resumen a <strong>@Model.CorreoElectronico</strong>.</p>
+                </div>
+
+                <dl class="row mb-3">
+                    <dt class="col-sm-4">Elección</dt>
+                    <dd class="col-sm-8">@Model.EleccionNombre</dd>
+                    <dt class="col-sm-4">Fecha de la elección</dt>
+                    <dd class="col-sm-8">@Model.FechaEleccion.ToString("dd/MM/yyyy")</dd>
+                </dl>
+
+                <table class="table table-sm">
+                    <thead class="table-light">
+                        <tr><th>Puesto</th><th>Selección</th><th>Partido</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model.Selecciones)
+                        {
+                            <tr>
+                                <td>@s.Puesto</td>
+                                <td>@s.Seleccion</td>
+                                <td>@(s.Partido ?? "No aplica")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <p class="text-center text-muted mb-3">Gracias por ejercer su derecho al voto.</p>
+                <div class="text-center">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Volver al inicio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

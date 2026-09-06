@@ -1,47 +1,92 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - eVote360</title>
-    <script type="importmap"></script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231b4f72'/%3E%3Cpath d='M9 17l5 5 9-11' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/eVote360.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">eVote360</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+<body class="d-flex flex-column min-vh-100">
+@{
+    var esAdmin = User.IsInRole(Roles.Administrador);
+    var esDirigente = User.IsInRole(Roles.DirigentePolitico);
+    var homeController = esAdmin ? "HomeAdmin" : esDirigente ? "HomeDirigente" : "Home";
+    var controladorActual = ViewContext.RouteData.Values["controller"]?.ToString();
 
-    <footer class="border-top footer text-muted">
+    string Activo(params string[] controladores) =>
+        controladores.Contains(controladorActual) ? "active fw-semibold" : "";
+}
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            &copy; 2026 - eVote360 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="@homeController" asp-action="Index">
+                <span class="brand-mark">✓</span> eVote360
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
+                    aria-controls="menuPrincipal" aria-expanded="false" aria-label="Menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+                <ul class="navbar-nav me-auto">
+                    @if (esAdmin)
+                    {
+                        <li class="nav-item"><a class="nav-link @Activo("PuestosElectivos")" asp-controller="PuestosElectivos" asp-action="Index">Puestos electivos</a></li>
+                        <li class="nav-item"><a class="nav-link @Activo("Ciudadanos")" asp-controller="Ciudadanos" asp-action="Index">Ciudadanos</a></li>
+                        <li class="nav-item"><a class="nav-link @Activo("PartidosPoliticos")" asp-controller="PartidosPoliticos" asp-action="Index">Partidos políticos</a></li>
+                        <li class="nav-item"><a class="nav-link @Activo("Usuarios")" asp-controller="Usuarios" asp-action="Index">Usuarios</a></li>
+                        <li class="nav-item"><a class="nav-link @Activo("DirigentesPoliticos")" asp-controller="DirigentesPoliticos" asp-action="Index">Dirigentes</a></li>
+                        <li class="nav-item"><a class="nav-link @Activo("Elecciones")" asp-controller="Elecciones" asp-action="Index">Elecciones</a></li>
+                    }
+                    else if (esDirigente)
+                    {
+                        <li class="nav-item"><a class="nav-link @Activo("Candidatos")" asp-controller="Candidatos" asp-action="Index">Candidatos</a></li>
+                        <li class="nav-item"><a class="nav-link @Activo("AsignacionCandidatoPuesto")" asp-controller="AsignacionCandidatoPuesto" asp-action="Index">Asignar candidato a puesto</a></li>
+                        <li class="nav-item"><a class="nav-link @Activo("AlianzasPoliticas")" asp-controller="AlianzasPoliticas" asp-action="Index">Alianzas políticas</a></li>
+                    }
+                </ul>
+                <ul class="navbar-nav align-items-lg-center">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item text-white-50 small me-lg-3">
+                            @User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value
+                            <span class="badge bg-light text-primary ms-1">@(esAdmin ? "Administrador" : "Dirigente político")</span>
+                        </li>
+                        <li class="nav-item">
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="btn btn-outline-light btn-sm" asp-controller="Account" asp-action="Login">Acceder</a>
+                        </li>
+                    }
+                </ul>
+            </div>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    </nav>
+</header>
+
+<main role="main" class="container py-4 flex-grow-1">
+    <partial name="_Alertas" />
+    @RenderBody()
+</main>
+
+<footer class="border-top py-3 text-muted small">
+    <div class="container d-flex justify-content-between flex-wrap gap-2">
+        <span>&copy; @DateTime.Now.Year eVote360 · Sistema de votación electrónica</span>
+        <span>ITLA · Programación III</span>
+    </div>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

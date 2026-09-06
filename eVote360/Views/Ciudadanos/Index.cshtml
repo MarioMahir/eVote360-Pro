@@ -1,0 +1,69 @@
+@model List<eVote360.Core.Entities.Ciudadano>
+@{
+    ViewData["Title"] = "Ciudadanos";
+    bool bloqueado = ViewBag.ExisteEleccionActiva ?? false;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Mantenimiento de ciudadanos</h1>
+    @if (bloqueado)
+    {
+        <button class="btn btn-secondary" disabled>Crear ciudadano</button>
+    }
+    else
+    {
+        <a asp-action="Create" class="btn btn-primary">Crear ciudadano</a>
+    }
+</div>
+
+<partial name="_BloqueoEleccionActiva" model="@("No se pueden modificar ciudadanos mientras exista una elección activa.")" />
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle bg-white shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Correo electrónico</th>
+                <th>Número de documento</th>
+                <th>Estado</th>
+                <th class="text-end" style="width:220px">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="6" class="text-center text-muted py-4">No existen ciudadanos registrados.</td></tr>
+            }
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td>@c.Nombre</td>
+                    <td>@c.Apellido</td>
+                    <td>@c.CorreoElectronico</td>
+                    <td><code>@c.NumeroDocumento</code></td>
+                    <td><partial name="_EstadoBadge" model="c.Activo" /></td>
+                    <td class="text-end">
+                        @if (bloqueado)
+                        {
+                            <button class="btn btn-sm btn-outline-secondary" disabled>Editar</button>
+                            <button class="btn btn-sm btn-outline-secondary" disabled>@(c.Activo ? "Desactivar" : "Activar")</button>
+                        }
+                        else
+                        {
+                            <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                            @if (c.Activo)
+                            {
+                                <a asp-action="Desactivar" asp-route-id="@c.Id" class="btn btn-sm btn-outline-danger">Desactivar</a>
+                            }
+                            else
+                            {
+                                <a asp-action="Activar" asp-route-id="@c.Id" class="btn btn-sm btn-outline-success">Activar</a>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

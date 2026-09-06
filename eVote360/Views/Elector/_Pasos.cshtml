@@ -1,0 +1,11 @@
+@model int
+@{
+    string[] pasos = ["Documento", "Cédula (OCR)", "Código", "Boleta", "Finalizar"];
+}
+<ol class="pasos list-unstyled d-flex justify-content-between mb-4">
+    @for (int i = 0; i < pasos.Length; i++)
+    {
+        var clase = i + 1 < Model ? "hecho" : i + 1 == Model ? "actual" : "";
+        <li class="@clase"><span class="num">@(i + 1)</span><span class="txt">@pasos[i]</span></li>
+    }
+</ol>

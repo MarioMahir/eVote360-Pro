@@ -1,0 +1,107 @@
+@model eVote360.ViewModels.Admin.ResumenAnioViewModel
+@{
+    ViewData["Title"] = "Home del administrador";
+    bool eleccionActiva = ViewBag.ExisteEleccionActiva ?? false;
+}
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+        <h1 class="h3 mb-0">Panel de administración</h1>
+        <small class="text-muted">Bienvenido, @User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value</small>
+    </div>
+    @if (eleccionActiva)
+    {
+        <span class="badge bg-success fs-6">Hay una elección activa</span>
+    }
+</div>
+
+<div class="row g-3 mb-4">
+    @{
+        var modulos = new[]
+        {
+            ("Puestos electivos", "PuestosElectivos", "Cargos que se disputan en una elección", "🏛️"),
+            ("Ciudadanos", "Ciudadanos", "Personas habilitadas para votar", "🪪"),
+            ("Partidos políticos", "PartidosPoliticos", "Organizaciones que presentan candidatos", "🚩"),
+            ("Usuarios", "Usuarios", "Administradores y dirigentes del sistema", "👤"),
+            ("Asignación de dirigentes", "DirigentesPoliticos", "Relación dirigente ↔ partido", "🤝"),
+            ("Elecciones", "Elecciones", "Crear, activar, finalizar y ver resultados", "🗳️")
+        };
+    }
+    @foreach (var (titulo, controlador, descripcion, icono) in modulos)
+    {
+        <div class="col-md-6 col-lg-4">
+            <a asp-controller="@controlador" asp-action="Index" class="card modulo h-100 text-decoration-none shadow-sm">
+                <div class="card-body d-flex gap-3 align-items-start">
+                    <span class="fs-2">@icono</span>
+                    <div>
+                        <div class="fw-semibold text-dark">@titulo</div>
+                        <div class="small text-muted">@descripcion</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="h5 mb-3">Resumen electoral por año</h2>
+
+        @if (Model.SinElecciones)
+        {
+            <div class="alert alert-info mb-0">No existen elecciones registradas en el sistema.</div>
+        }
+        else
+        {
+            <form method="get" asp-action="Index" class="row g-2 align-items-end mb-3">
+                <input type="hidden" name="consultar" value="true" />
+                <div class="col-sm-4 col-md-3">
+                    <label asp-for="Anio" class="form-label"></label>
+                    <select asp-for="Anio" asp-items="Model.Anios" class="form-select"></select>
+                    <span asp-validation-for="Anio" class="text-danger"></span>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Obtener Resumen Electoral</button>
+                </div>
+            </form>
+
+            @if (Model.Resultados != null)
+            {
+                @if (Model.Resultados.Count == 0)
+                {
+                    <div class="alert alert-info mb-0">No existen elecciones registradas para el año seleccionado.</div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nombre de la elección</th>
+                                    <th>Fecha de realización</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Partidos participantes</th>
+                                    <th class="text-end">Candidatos participantes</th>
+                                    <th class="text-end">Ciudadanos que votaron</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var e in Model.Resultados)
+                                {
+                                    <tr>
+                                        <td>@e.Nombre</td>
+                                        <td>@e.FechaEleccion.ToString("dd/MM/yyyy")</td>
+                                        <td>@e.Estado</td>
+                                        <td class="text-end">@e.PartidosParticipantes</td>
+                                        <td class="text-end">@e.CandidatosParticipantes</td>
+                                        <td class="text-end">@e.CiudadanosQueVotaron.ToString("N0")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>

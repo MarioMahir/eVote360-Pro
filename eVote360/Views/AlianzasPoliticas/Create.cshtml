@@ -1,0 +1,30 @@
+@model eVote360.ViewModels.Dirigente.AlianzaCreateViewModel
+@{
+    ViewData["Title"] = "Crear solicitud de alianza";
+}
+<div class="row justify-content-center"><div class="col-lg-6"><div class="card shadow-sm"><div class="card-body p-4">
+    <h1 class="h4 mb-1">Crear solicitud de alianza</h1>
+    <p class="text-muted small">Solo se listan partidos activos con los que no exista alianza vigente ni solicitud pendiente en ninguna dirección.</p>
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="PartidoAliadoId" class="form-label"></label>
+            <select asp-for="PartidoAliadoId" asp-items="Model.Partidos" class="form-select">
+                <option value="">Seleccione un partido político</option>
+            </select>
+            <span asp-validation-for="PartidoAliadoId" class="text-danger"></span>
+            @if (!Model.Partidos.Any())
+            {
+                <div class="form-text text-warning">No hay partidos disponibles para solicitar una alianza.</div>
+            }
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary">Volver atrás</a>
+            <button type="submit" class="btn btn-primary" @(Model.Partidos.Any() ? "" : "disabled")>Crear solicitud</button>
+        </div>
+    </form>
+</div></div></div></div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,69 @@
+@model List<eVote360.Core.Entities.PartidoPolitico>
+@{
+    ViewData["Title"] = "Partidos políticos";
+    bool bloqueado = ViewBag.ExisteEleccionActiva ?? false;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Mantenimiento de partidos políticos</h1>
+    @if (bloqueado)
+    {
+        <button class="btn btn-secondary" disabled>Crear partido político</button>
+    }
+    else
+    {
+        <a asp-action="Create" class="btn btn-primary">Crear partido político</a>
+    }
+</div>
+
+<partial name="_BloqueoEleccionActiva" model="@("No se pueden modificar partidos políticos mientras exista una elección activa.")" />
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle bg-white shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th style="width:70px">Logo</th>
+                <th>Nombre del partido</th>
+                <th>Siglas</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th class="text-end" style="width:220px">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="6" class="text-center text-muted py-4">No existen partidos políticos registrados.</td></tr>
+            }
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td><img src="@p.LogoUrl" alt="Logo de @p.Siglas" class="logo-partido" /></td>
+                    <td class="fw-semibold">@p.Nombre</td>
+                    <td><span class="badge bg-light text-dark border">@p.Siglas</span></td>
+                    <td class="text-muted small">@p.Descripcion</td>
+                    <td><partial name="_EstadoBadge" model="p.Activo" /></td>
+                    <td class="text-end">
+                        @if (bloqueado)
+                        {
+                            <button class="btn btn-sm btn-outline-secondary" disabled>Editar</button>
+                            <button class="btn btn-sm btn-outline-secondary" disabled>@(p.Activo ? "Desactivar" : "Activar")</button>
+                        }
+                        else
+                        {
+                            <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                            @if (p.Activo)
+                            {
+                                <a asp-action="Desactivar" asp-route-id="@p.Id" class="btn btn-sm btn-outline-danger">Desactivar</a>
+                            }
+                            else
+                            {
+                                <a asp-action="Activar" asp-route-id="@p.Id" class="btn btn-sm btn-outline-success">Activar</a>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

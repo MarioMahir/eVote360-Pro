@@ -1,0 +1,43 @@
+@model eVote360.Core.DTOs.Candidatos.CandidatoCreateDto
+@{
+    ViewData["Title"] = "Crear candidato";
+    var partido = (eVote360.Core.Entities.PartidoPolitico)ViewBag.Partido;
+}
+<div class="row justify-content-center"><div class="col-lg-6"><div class="card shadow-sm"><div class="card-body p-4">
+    <h1 class="h4 mb-1">Crear candidato</h1>
+    <p class="text-muted small">El candidato se asociará automáticamente a <strong>@partido.Nombre (@partido.Siglas)</strong>.</p>
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Nombre" class="form-label">Nombre del candidato</label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="Apellido" class="form-label">Apellido del candidato</label>
+                <input asp-for="Apellido" class="form-control" />
+                <span asp-validation-for="Apellido" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Foto" class="form-label">Foto del candidato</label>
+            <input asp-for="Foto" type="file" accept=".jpg,.jpeg,.png" class="form-control" />
+            <span asp-validation-for="Foto" class="text-danger"></span>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="Activo" class="form-check-input" />
+            <label asp-for="Activo" class="form-check-label">Activo</label>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary">Volver atrás</a>
+            <button type="submit" class="btn btn-primary">Crear candidato</button>
+        </div>
+    </form>
+</div></div></div></div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

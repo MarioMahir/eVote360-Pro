@@ -1,0 +1,11 @@
+@model string
+@{
+    bool existe = ViewBag.ExisteEleccionActiva ?? false;
+}
+@if (existe)
+{
+    <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+        <span class="fs-5">⚠️</span>
+        <div>@Model</div>
+    </div>
+}

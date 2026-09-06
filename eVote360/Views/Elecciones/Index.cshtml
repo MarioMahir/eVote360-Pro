@@ -1,0 +1,70 @@
+@model List<eVote360.Core.DTOs.Elecciones.EleccionListDto>
+@{
+    ViewData["Title"] = "Elecciones";
+    bool eleccionActiva = ViewBag.ExisteEleccionActiva ?? false;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Elecciones</h1>
+    @if (eleccionActiva)
+    {
+        <button class="btn btn-secondary" disabled title="Hay una elección activa">Crear elección</button>
+    }
+    else
+    {
+        <a asp-action="Create" class="btn btn-primary">Crear elección</a>
+    }
+</div>
+
+<partial name="_BloqueoEleccionActiva" model="@("Mientras exista una elección activa no se pueden crear nuevas elecciones ni modificar la configuración electoral.")" />
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle bg-white shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th>Nombre de la elección</th>
+                <th>Fecha de realización</th>
+                <th>Estado</th>
+                <th class="text-end">Partidos</th>
+                <th class="text-end">Puestos</th>
+                <th class="text-end">Ciudadanos que votaron</th>
+                <th class="text-end">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" class="text-center text-muted py-4">No existen elecciones registradas.</td></tr>
+            }
+            @foreach (var e in Model)
+            {
+                <tr class="@(e.Estado == EstadoEleccion.Activa ? "table-success" : "")">
+                    <td class="fw-semibold">@e.Nombre</td>
+                    <td>@e.FechaEleccion.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @switch (e.Estado)
+                        {
+                            case EstadoEleccion.Pendiente: <span class="badge bg-warning text-dark">Pendiente</span>; break;
+                            case EstadoEleccion.Activa: <span class="badge bg-success">Activa</span>; break;
+                            case EstadoEleccion.Finalizada: <span class="badge bg-secondary">Finalizada</span>; break;
+                        }
+                    </td>
+                    <td class="text-end">@e.PartidosParticipantes</td>
+                    <td class="text-end">@e.PuestosDisputados</td>
+                    <td class="text-end">@e.CiudadanosQueVotaron.ToString("N0")</td>
+                    <td class="text-end">
+                        @switch (e.Estado)
+                        {
+                            case EstadoEleccion.Pendiente:
+                                <a asp-action="Activar" asp-route-id="@e.Id" class="btn btn-sm btn-success">Activar</a>; break;
+                            case EstadoEleccion.Activa:
+                                <a asp-action="Finalizar" asp-route-id="@e.Id" class="btn btn-sm btn-danger">Finalizar</a>; break;
+                            case EstadoEleccion.Finalizada:
+                                <a asp-action="Resultados" asp-route-id="@e.Id" class="btn btn-sm btn-outline-primary">Ver resultados</a>; break;
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

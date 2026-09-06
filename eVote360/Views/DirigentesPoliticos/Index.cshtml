@@ -1,0 +1,62 @@
+@model List<eVote360.Core.Entities.DirigentePolitico>
+@{
+    ViewData["Title"] = "Asignación de dirigentes políticos";
+    bool bloqueado = ViewBag.ExisteEleccionActiva ?? false;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Asignación de dirigentes políticos</h1>
+    @if (bloqueado)
+    {
+        <button class="btn btn-secondary" disabled>Agregar asignación</button>
+    }
+    else
+    {
+        <a asp-action="Create" class="btn btn-primary">Agregar asignación</a>
+    }
+</div>
+
+<partial name="_BloqueoEleccionActiva" model="@("No se pueden modificar asignaciones de dirigentes políticos mientras exista una elección activa.")" />
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle bg-white shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th>Dirigente político</th>
+                <th>Nombre de usuario</th>
+                <th>Partido político asignado</th>
+                <th>Siglas</th>
+                <th>Estado del dirigente</th>
+                <th>Estado del partido</th>
+                <th class="text-end">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" class="text-center text-muted py-4">No existen asignaciones registradas.</td></tr>
+            }
+            @foreach (var d in Model)
+            {
+                <tr>
+                    <td class="fw-semibold">@d.Usuario.Nombre @d.Usuario.Apellido</td>
+                    <td><code>@d.Usuario.NombreUsuario</code></td>
+                    <td>@d.PartidoPolitico.Nombre</td>
+                    <td><span class="badge bg-light text-dark border">@d.PartidoPolitico.Siglas</span></td>
+                    <td><partial name="_EstadoBadge" model="d.Usuario.Activo" /></td>
+                    <td><partial name="_EstadoBadge" model="d.PartidoPolitico.Activo" /></td>
+                    <td class="text-end">
+                        @if (bloqueado)
+                        {
+                            <button class="btn btn-sm btn-outline-secondary" disabled>Eliminar relación</button>
+                        }
+                        else
+                        {
+                            <a asp-action="Delete" asp-route-id="@d.Id" class="btn btn-sm btn-outline-danger">Eliminar relación</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

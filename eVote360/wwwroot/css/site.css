@@ -8,24 +8,111 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+  background: #f4f6f9;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.navbar.bg-primary {
+  background-color: #1b4f72 !important;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #fff;
+  color: #1b4f72;
+  font-weight: 800;
+  font-size: 15px;
 }
+
+.btn-primary {
+  --bs-btn-bg: #1b4f72;
+  --bs-btn-border-color: #1b4f72;
+  --bs-btn-hover-bg: #154059;
+  --bs-btn-hover-border-color: #154059;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #1b4f72;
+  --bs-btn-border-color: #1b4f72;
+  --bs-btn-hover-bg: #1b4f72;
+  --bs-btn-hover-border-color: #1b4f72;
+}
+
+.card.modulo {
+  transition: transform .15s, box-shadow .15s;
+}
+
+.card.modulo:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .12) !important;
+}
+
+/* Imágenes */
+.logo-partido { width: 44px; height: 44px; object-fit: contain; border-radius: 6px; background: #fff; }
+.logo-partido-sm { width: 26px; height: 26px; object-fit: contain; border-radius: 4px; vertical-align: middle; }
+.logo-partido-grande { width: 96px; height: 96px; object-fit: contain; border-radius: 10px; background: #fff; }
+.foto-candidato { width: 64px; height: 64px; object-fit: cover; border-radius: 50%; border: 2px solid #e9ecef; }
+.foto-candidato-sm { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; }
+
+/* Boleta */
+.opcion-voto {
+  cursor: pointer;
+  border: 2px solid #dee2e6;
+  transition: border-color .15s, background-color .15s;
+}
+
+.opcion-voto:hover {
+  border-color: #1b4f72;
+}
+
+.btn-check:checked + .opcion-voto {
+  border-color: #198754;
+  background: #f0faf4;
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, .15);
+}
+
+input.codigo {
+  letter-spacing: .5em;
+  font-size: 1.75rem;
+  font-family: ui-monospace, monospace;
+}
+
+/* Pasos del elector */
+.pasos {
+  counter-reset: paso;
+  gap: 4px;
+}
+
+.pasos li {
+  flex: 1;
+  text-align: center;
+  font-size: .8rem;
+  color: #6c757d;
+  position: relative;
+}
+
+.pasos li .num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #dee2e6;
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.pasos li .txt { display: block; }
+
+.pasos li.actual .num { background: #1b4f72; color: #fff; }
+.pasos li.actual { color: #1b4f72; font-weight: 600; }
+.pasos li.hecho .num { background: #198754; color: #fff; }
+
+.indicador .display-6 { font-size: 2.2rem; }
