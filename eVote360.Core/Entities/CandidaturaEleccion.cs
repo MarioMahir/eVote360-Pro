@@ -1,13 +1,17 @@
 namespace eVote360.Core.Entities;
 
 /// <summary>
-/// Relación vigente entre un candidato y un puesto electivo dentro de un partido.
-/// El partido que asigna puede ser el de origen del candidato (candidato propio)
-/// o un partido aliado (candidato aliado).
+/// Candidatura que participó en una elección: se registra al activarla a partir
+/// de las asignaciones vigentes. Solo guarda relaciones (no copia datos), y sirve
+/// para la boleta, los resultados y el bloqueo de campos críticos.
 /// </summary>
-public class AsignacionCandidatoPuesto
+public class CandidaturaEleccion
 {
     public int Id { get; set; }
+
+    public int EleccionId { get; set; }
+
+    public Eleccion Eleccion { get; set; } = null!;
 
     public int PartidoPoliticoId { get; set; }
 
@@ -20,6 +24,4 @@ public class AsignacionCandidatoPuesto
     public int PuestoElectivoId { get; set; }
 
     public PuestoElectivo PuestoElectivo { get; set; } = null!;
-
-    public DateTime FechaAsignacion { get; set; } = DateTime.Now;
 }

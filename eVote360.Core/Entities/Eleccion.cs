@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using eVote360.Core.Enums;
 
 namespace eVote360.Core.Entities;
 
@@ -13,7 +14,11 @@ public class Eleccion
     [Required]
     public DateTime FechaEleccion { get; set; }
 
-    public bool Activa { get; set; }
+    public EstadoEleccion Estado { get; set; } = EstadoEleccion.Pendiente;
 
-    public bool Finalizada { get; set; }
+    public DateTime? FechaActivacion { get; set; }
+
+    public DateTime? FechaFinalizacion { get; set; }
+
+    public DateTime FechaCreacion { get; set; } = DateTime.Now;
 }

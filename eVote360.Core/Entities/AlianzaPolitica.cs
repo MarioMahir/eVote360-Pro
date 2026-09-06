@@ -1,4 +1,4 @@
-﻿namespace eVote360.Core.Entities;
+namespace eVote360.Core.Entities;
 
 public class AlianzaPolitica
 {
@@ -14,5 +14,13 @@ public class AlianzaPolitica
 
     public DateTime FechaSolicitud { get; set; } = DateTime.Now;
 
+    public DateTime? FechaRespuesta { get; set; }
+
     public EstadoAlianza Estado { get; set; } = EstadoAlianza.Pendiente;
+
+    /// <summary>
+    /// Una solicitud aceptada genera una alianza vigente. Al "eliminar" la alianza
+    /// se marca como no vigente para conservar el histórico.
+    /// </summary>
+    public bool Vigente { get; set; }
 }

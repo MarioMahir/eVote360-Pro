@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace eVote360.Core.Entities;
 
@@ -23,7 +23,5 @@ public class Candidato
 
     public PartidoPolitico PartidoPolitico { get; set; } = null!;
 
-    public int? PuestoElectivoId { get; set; }
-
-    public PuestoElectivo? PuestoElectivo { get; set; }
+    public string NombreCompleto => $"{Nombre} {Apellido}";
 }
